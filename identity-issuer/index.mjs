@@ -286,7 +286,7 @@ function transformToArray(obj) {
 async function cliInitialise() {
     try {
         const response = await axios.get(
-            'http://identity-issuer-identity-issuer-1:3000/health'
+            'http://localhost:3000/health'
         )
         if (response.statusText == 'OK') {
             console.log(

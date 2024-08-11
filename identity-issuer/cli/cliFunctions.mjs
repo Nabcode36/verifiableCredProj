@@ -15,7 +15,7 @@ import chalk from 'chalk'
 export async function checkStatus() {
     try {
         const response = await axios.get(
-            'http://identity-issuer-identity-issuer-1:3000/health'
+            'http://localhost:3000/health'
         )
         if (response.statusText == 'OK') {
             console.log(
@@ -38,7 +38,7 @@ export async function checkStatus() {
 export async function getIssuerList() {
     try {
         const response = await axios.get(
-            'http://identity-issuer-identity-issuer-1:3000/get/issuer-list'
+            'http://localhost:3000/get/issuer-list'
         )
 
         if (!Array.isArray(response.data)) {
@@ -71,7 +71,7 @@ export async function getIssuerList() {
 export async function getUserList() {
     try {
         const response = await axios.get(
-            'http://identity-issuer-identity-issuer-1:3000/get/user-list'
+            'http://localhost:3000/get/user-list'
         )
 
         if (!Array.isArray(response.data)) {
@@ -104,7 +104,7 @@ export async function getUserList() {
 export async function createIssuer(issuerName) {
     try {
         const response = await axios.post(
-            'http://identity-issuer-identity-issuer-1:3000/create/issuer',
+            'http://localhost:3000/create/issuer',
             { name: issuerName }
         )
         if (response.status === 201) {
@@ -132,7 +132,7 @@ export async function createIssuer(issuerName) {
 export async function createUser(userId, props) {
     try {
         const response = await axios.post(
-            'http://identity-issuer-identity-issuer-1:3000/create/user',
+            'http://localhost:3000/create/user',
             { userId: userId, props: props }
         )
         if (response.status === 201) {
@@ -158,7 +158,7 @@ export async function createUser(userId, props) {
 export async function getCurrentIssuer() {
     try {
         const response = await axios.get(
-            'http://identity-issuer-identity-issuer-1:3000/get/current-issuer'
+            'http://localhost:3000/get/current-issuer'
         )
         const issuerName = response.data.issuer.name
         console.log(chalk.magenta('Current issuer:'))
@@ -177,7 +177,7 @@ export async function getCurrentIssuer() {
 export async function getCurrentUser() {
     try {
         const response = await axios.get(
-            'http://identity-issuer-identity-issuer-1:3000/get/current-user'
+            'http://localhost:3000/get/current-user'
         )
         const userId = response.data.userDID
         console.log(chalk.magenta('Current user:'))
@@ -196,7 +196,7 @@ export async function getCurrentUser() {
 export async function setCurrentIssuer(issuerName) {
     try {
         const response = await axios.post(
-            'http://identity-issuer-identity-issuer-1:3000/set/current-issuer',
+            'http://localhost:3000/set/current-issuer',
             { issuerName: issuerName }
         )
 
@@ -223,7 +223,7 @@ export async function setCurrentIssuer(issuerName) {
 export async function setCurrentUser(userId) {
     try {
         const response = await axios.post(
-            'http://identity-issuer-identity-issuer-1:3000/set/current-user',
+            'http://localhost:3000/set/current-user',
             { userId: userId }
         )
 
@@ -252,11 +252,11 @@ export async function setCurrentUser(userId) {
 export async function createCredConfig(name, configuration) {
     try {
         const response = await axios.post(
-            'http://identity-issuer-identity-issuer-1:3000/create/credential-configuration',
+            'http://localhost:3000/create/credential-configuration',
             { name: name, configuration: configuration }
         )
         const currentIssuer = await axios.get(
-            'http://identity-issuer-identity-issuer-1:3000/get/current-issuer'
+            'http://localhost:3000/get/current-issuer'
         )
         const issuerName = currentIssuer.data.issuer.name
         if (response.status === 201) {
