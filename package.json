@@ -1,0 +1,10 @@
+{
+    "devDependencies": {
+        "eslint": "^9.8.0",
+        "prettier": "^3.3.3"
+    },
+    "scripts": {
+        "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,md,mjs}\"",
+        "lint:identity-issuer": "eslint 'identity-issuer/**/*.{ts,tsx,js,jsx,mjs}'"
+    }
+}

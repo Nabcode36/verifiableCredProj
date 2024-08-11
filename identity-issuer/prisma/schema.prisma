@@ -1,0 +1,81 @@
+// This is the database for the different entities involved with credential issuance. The
+// structures of each entity is based on the W3C specification and openid for Verifiable
+// Credential Issuance 
+// https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Issuer {
+  id                    String        @id @default(uuid())
+  name                  String        @unique
+  publicKey             String        // Public key of the Issuer 
+  privateKey            String        // Private key of the Issuer
+  didDoc                Json          // Did document of the Issuer
+  issuerDID             String        @unique
+  credentials           Credential[]  // List of credentials the created and issuer has issued
+  credentialconfigurations  CredentialConfiguration[]
+  CurrentIssuer          CurrentIssuer[]
+}
+
+model CredentialConfiguration {
+  id                String   @id @default(uuid())
+  name              String   @unique
+  issuerDID         String          // The issuerDIDs of the issuers who support this configuration
+  credentialConfiguration  Json[]   // Json list of credential configurations to be used by issuers
+  credentials       Credential[]    // List of credentials that use this credential configuration
+  issuer            Issuer   @relation(fields: [issuerDID], references: [issuerDID])
+}
+
+model CurrentIssuer {
+  id                String   @id @default(uuid())
+  issuerDID         String   @unique
+  issuer            Issuer   @relation(fields: [issuerDID], references: [issuerDID])
+  @@unique([id])
+}
+
+model Credential {
+  id              String            @id @default(uuid())
+  issuerDID       String            // DID of the issuer
+  userId          String            // User ID associated with the credential
+  configuration   CredentialConfiguration  @relation(fields: [configurationId], references: [id])
+  configurationId String            // The credential type referenced by its configuration id
+  issuer          Issuer            @relation(fields: [issuerDID], references: [issuerDID])
+  user            User              @relation(fields: [userId], references: [userDID])
+  userPublicKey   String            // Public key/DID of the user
+  issuedAt        DateTime          @default(now())
+  validUntil      DateTime?         // Expiry date for the credential
+
+  @@unique([userId, configurationId])
+}
+
+model Business {
+  id                    String        @id @default(uuid())
+  name                  String        @unique
+  publicKey             String        // Public key
+  didDoc                Json          // Did document of the business
+  businessDID           String        @unique
+  requiredCredentials   Json          // JSON field to store required credentials
+}
+
+model User {
+  id                        String        @id @default(uuid())
+  userDID                   String        @unique
+  props                     Json          // User data to be provided by the user in the CLI
+  credentials               Credential[]  // List of credentials that the user has  
+  CurrentUser               CurrentUser[] // If a particular user is the current user, they will be in
+                                          // this list
+}
+
+model CurrentUser {
+  id               String   @id @default(uuid())
+  userDID          String   @unique
+  user             User     @relation(fields: [userDID], references: [userDID])
+  @@unique([id])
+}

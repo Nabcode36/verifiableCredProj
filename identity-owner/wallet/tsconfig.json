@@ -1,0 +1,12 @@
+{
+    "extends": "./tsconfig.base",
+    "compilerOptions": {
+        "strict": true,
+        "paths": {
+            "@my/ui/*": ["./packages/ui/*"],
+            "screens/*": ["./packages/screens/*"],
+            "components/*": ["./packages/components/*"]
+        }
+    },
+    "include": ["**/*.ts", "**/*.tsx", "packages/db/dbConnect.ts"]
+}

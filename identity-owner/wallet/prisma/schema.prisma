@@ -1,0 +1,57 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["reactNative"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./app.db"
+}
+
+model DisplayCredential {
+  id          Int    @id @default(autoincrement())
+  displayName String
+  displayIcon String
+}
+
+model Credential {
+  credid            Int                 @id @default(autoincrement())
+  context           String
+  type              String
+  id                String?
+  issuer            Issuer              @relation(fields: [issuerIssId], references: [issId])
+  credentialSubject CredentialSubject[]
+  proof             Proof?              @relation(fields: [proofProofValue], references: [proofValue])
+  proofId           String?
+  issuerIssId       Int
+  proofProofValue   String?
+}
+
+model CredentialSubject {
+  id               String      @unique
+  value            String
+  Credential       Credential? @relation(fields: [credentialCredid], references: [credid])
+  credentialCredid Int?
+}
+
+model Proof {
+  id                 String?
+  type               String
+  cryptosuite        String
+  created            String?
+  verificationMethod String
+  proofPurpose       String
+  proofValue         String       @unique
+  Credential         Credential[]
+}
+
+model Issuer {
+  issId       Int          @id @default(autoincrement())
+  id          String
+  name        String?
+  description String?
+  Credential  Credential[]
+}

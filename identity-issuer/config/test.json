@@ -1,0 +1,19 @@
+{
+    "server": {
+        "port": 3000
+    },
+    "database": {
+        "url": "postgresql://postgres:admin@localhost:5432/postgres",
+        "host": "localhost",
+        "port": 5432,
+        "username": "postgres",
+        "password": "admin",
+        "name": "postgres"
+    },
+    "logging": {
+        "level": "info"
+    },
+    "jwt": {
+        "secret": "test_secret"
+    }
+}

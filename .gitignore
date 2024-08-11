@@ -1,0 +1,7 @@
+*/node_modules
+*.xml
+
+*/package-lock.json
+*/tsconfig.json
+/.idea
+/node_modules/

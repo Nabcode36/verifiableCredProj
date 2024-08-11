@@ -1,0 +1,58 @@
+{
+    "name": "",
+    "url": "192.168.1.92:3333",
+    "did": "did:web:127.0.0.1%3A3000",
+    "hash": {},
+    "mobile_presentation_definition": "[{\"name\":\"government card\",\"purpose\":\"u need to prove \",\"id\":\"government-card\",\"fields\":[{\"path\":\"$.credentialSubject.birthDate\",\"filter\":\"\"},{\"path\":\"$.credentialSubject.birthPlace\",\"filter\":\"\"}],\"issuerFilter\":\"All\",\"credentialFilter\":\"All\",\"selectedIssuers\":[],\"selectedCredentialOptions\":[]},{\"name\":\"uni card\",\"purpose\":\"prove ur at uni\",\"id\":\"uni-card\",\"fields\":[{\"path\":\"$.credentialSubject.hasCredential.recognizedBy.name\",\"filter\":\"\"}],\"issuerFilter\":\"All\",\"credentialFilter\":\"All\",\"selectedIssuers\":[],\"selectedCredentialOptions\":[]}]",
+    "presentation_definition": {
+        "@context": [
+            "https://www.w3.org/2018/credentials/v1",
+            "https://www.w3.org/2018/credentials/examples/v1",
+            "https://w3id.org/security/bbs/v1",
+            "https://schema.org"
+        ],
+        "id": "c5c77069-66fa-4f74-83ba-a25c133bcc21",
+        "format": {
+            "ldp_vc": {
+                "proof_type": ["BbsBlsSignature2020"]
+            }
+        },
+        "input_descriptors": [
+            {
+                "id": "government-card",
+                "name": "government card",
+                "purpose": "prove ur age",
+                "constraints": {
+                    "fields": [
+                        {
+                            "path": ["$.credentialSubject.birthDate"]
+                        },
+                        {
+                            "path": ["$.credentialSubject.birthPlace"]
+                        }
+                    ]
+                }
+            },
+            {
+                "id": "student-card",
+                "name": "student card",
+                "purpose": "prove ur a uni student",
+                "constraints": {
+                    "fields": [
+                        {
+                            "path": [
+                                "$.credentialSubject.hasCredential.recognizedBy.name"
+                            ]
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    "metadata": {
+        "name": "",
+        "logoPath": "/workspaces/capstone-project-3900h13bwriterundebugrepeat/service-provider/backend/src/services/StorageController/uploads/logo-1720194741328-200257959.png",
+        "tosPath": "/workspaces/capstone-project-3900h13bwriterundebugrepeat/service-provider/backend/src/services/StorageController/uploads/terms_of_service-1720194741329-526277703.txt",
+        "policyPath": "/workspaces/capstone-project-3900h13bwriterundebugrepeat/service-provider/backend/src/services/StorageController/uploads/policy-1720194741329-956413538.txt"
+    }
+}

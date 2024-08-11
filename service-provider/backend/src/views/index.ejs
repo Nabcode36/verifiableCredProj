@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Onboarding Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        :root {
+            --background: #f0f4f8;
+            --text: #2d3748;
+            --primary: #4a5568;
+            --secondary: #a0aec0;
+            --accent1: #ed8936;
+            --accent2: #38b2ac;
+            --accent3: #9f7aea;
+            --input-bg: #edf2f7;
+            --success: #48bb78;
+            --danger: #e53e3e;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            line-height: 1.4;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            grid-column: 1 / -1;
+            display: flex;
+            align-items: center;
+            color: var(--primary);
+        }
+        h1 i {
+            margin-right: 20px; /* Increased spacing between icon and heading */
+            color: var(--accent1);
+        }
+        .section {
+            background: white;
+            border-radius: 12px; /* Increased border radius for softer corners */
+            padding: 20px; /* Increased padding for better spacing */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            height: 320px;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+        }
+        .section:hover {
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+        .section:nth-child(2)::before { background-color: var(--accent1); }
+        .section:nth-child(3)::before { background-color: var(--accent2); }
+        .section:nth-child(4)::before { background-color: var(--accent3); }
+        h2 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            color: var(--primary);
+        }
+        h2 i {
+            margin-right: 15px; /* Increased spacing between icon and heading */
+        }
+        .input-group {
+            display: flex;
+            margin-bottom: 15px;
+            border-radius: 8px; /* Increased border radius */
+            overflow: hidden;
+            background-color: var(--input-bg);
+            transition: all 0.3s ease;
+        }
+        .input-group:focus-within {
+            box-shadow: 0 0 0 2px var(--accent1);
+        }
+        input[type="text"] {
+            flex-grow: 1;
+            padding: 12px 15px; /* Increased padding */
+            border: none;
+            background: transparent;
+            font-size: 0.9rem;
+            color: var(--text);
+        }
+        input[type="text"]::placeholder {
+            color: var(--secondary);
+        }
+        input[type="text"]:focus {
+            outline: none;
+        }
+        button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 15px;
+            border: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 8px; /* Changed to rounded square */
+        }
+        .btn-icon {
+            padding: 12px; /* Increased padding */
+            background-color: transparent;
+            border-radius: 8px; /* Changed to rounded square */
+        }
+        .btn-icon i {
+            stroke: var(--text);
+        }
+        .btn-icon:hover i {
+            stroke: var(--accent1);
+        }
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+        .btn-success:hover {
+            background-color: #38a169;
+        }
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+        .btn-danger:hover {
+            background-color: #c53030;
+        }
+        #qrcode {
+            display: flex;
+            justify-content: center;
+            margin-top: 15px;
+            flex-grow: 1;
+            align-items: center;
+        }
+        .list-container {
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+        .list-item {
+            border-bottom: 1px solid var(--secondary);
+            padding: 12px 0; /* Increased padding */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            animation: fadeIn 0.5s ease-out;
+        }
+        .list-item:last-child {
+            border-bottom: none;
+        }
+        .list-item strong {
+            color: var(--primary);
+        }
+        .list-item-text {
+            flex-grow: 1;
+            margin-right: 10px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .list-item-buttons {
+            display: flex;
+            gap: 8px; /* Increased gap */
+        }
+        .shape {
+            position: absolute;
+            opacity: 0.1;
+            z-index: 0;
+            transition: all 0.5s ease;
+        }
+        .section:hover .shape {
+            transform: scale(1.2) rotate(15deg);
+        }
+        .circle {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: var(--accent2);
+            bottom: -50px;
+            right: -50px;
+        }
+        .triangle {
+            width: 0;
+            height: 0;
+            border-left: 50px solid transparent;
+            border-right: 50px solid transparent;
+            border-bottom: 100px solid var(--accent3);
+            top: -50px;
+            right: -50px;
+            transform: rotate(45deg);
+        }
+        .square {
+            width: 80px;
+            height: 80px;
+            background-color: var(--accent1);
+            bottom: -40px;
+            left: -40px;
+            transform: rotate(15deg);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1><i data-feather="monitor"></i> Dashboard</h1>
+
+    <div class="section">
+        <div class="shape square"></div>
+        <h2><i data-feather="link"></i> Generate QR Code</h2>
+        <form id="urlForm">
+            <div class="input-group">
+                <input type="text" id="urlInput" placeholder="Enter URL" value="<%= defaultUrl %>">
+                <button class="btn-icon" type="submit"><i data-feather="send"></i></button>
+            </div>
+        </form>
+        <div id="qrcode"></div>
+    </div>
+
+    <div class="section">
+        <div class="shape circle"></div>
+        <h2><i data-feather="user-plus"></i> Pending Requests</h2>
+        <div id="requestsList" class="list-container"></div>
+    </div>
+
+    <div class="section">
+        <div class="shape triangle"></div>
+        <h2><i data-feather="check-circle"></i> Approved Devices</h2>
+        <div id="approvedDevicesList" class="list-container"></div>
+    </div>
+</div>
+
+<script>
+    feather.replace();
+    const socket = io();
+    let qrcode;
+
+    document.getElementById('urlForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const url = document.getElementById('urlInput').value;
+
+        fetch('/generate-qr', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ url }),
+        })
+            .then(response => response.json())
+            .then(data => {
+                const qrcodeElement = document.getElementById("qrcode");
+                qrcodeElement.innerHTML = '';
+                qrcodeElement.style.display = 'flex';
+
+                qrcode = new QRCode(qrcodeElement, {
+                    text: data.qrCodeText,
+                    width: 128,
+                    height: 128
+                });
+            })
+            .catch((error) => console.error('Error:', error));
+    });
+
+    socket.on('onboardingRequest', (data) => {
+        const requestsList = document.getElementById('requestsList');
+        const requestElement = document.createElement('div');
+        requestElement.id = `request-${data.sender_id}`;
+        requestElement.className = 'list-item';
+        requestElement.innerHTML = `
+                <div class="list-item-text"><strong>ID:</strong> ${data.sender_id}</div>
+                <div class="list-item-buttons">
+                    <button class="btn-success" onclick="approve('${data.sender_id}')"><i data-feather="check"></i></button>
+                    <button class="btn-danger" onclick="reject('${data.sender_id}')"><i data-feather="x"></i></button>
+                </div>
+            `;
+        requestsList.appendChild(requestElement);
+        feather.replace();
+    });
+
+    socket.on('refreshApprovedDevices', () => {
+        fetchApprovedDevices();
+    });
+
+    function sendResult(senderId, status) {
+        fetch('/onboarding-result', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ sender_id: senderId, status: status }),
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                removeRequest(senderId);
+            })
+            .catch((error) => console.error('Error:', error));
+    }
+
+    function approve(senderId) {
+        sendResult(senderId, 'approved');
+    }
+
+    function reject(senderId) {
+        sendResult(senderId, 'rejected');
+    }
+
+    function removeRequest(senderId) {
+        const requestElement = document.getElementById(`request-${senderId}`);
+        if (requestElement) {
+            requestElement.remove();
+        }
+    }
+
+    function fetchApprovedDevices() {
+        fetch('/approved-devices')
+            .then(response => response.json())
+            .then(devices => {
+                const approvedDevicesList = document.getElementById('approvedDevicesList');
+                approvedDevicesList.innerHTML = '';
+                devices.forEach(device => {
+                    const deviceElement = document.createElement('div');
+                    deviceElement.className = 'list-item';
+                    deviceElement.innerHTML = `
+                            <div class="list-item-text"><strong>ID:</strong> ${device}</div>
+                            <button class="btn-danger" onclick="deauthorizeDevice('${device}')"><i data-feather="trash-2"></i></button>
+                        `;
+                    approvedDevicesList.appendChild(deviceElement);
+                });
+                feather.replace();
+            })
+            .catch(error => console.error('Error fetching approved devices:', error));
+    }
+
+    function deauthorizeDevice(deviceId) {
+        fetch('/deauthorize-device', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ device_id: deviceId }),
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                fetchApprovedDevices();
+            })
+            .catch((error) => console.error('Error:', error));
+    }
+
+    fetchApprovedDevices();
+</script>
+</body>
+</html>
